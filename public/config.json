@@ -1,0 +1,8 @@
+{
+  "APP_MODE": "local",
+  "TTS_PROVIDER_DEFAULT": "offline",
+  "OFFLINE_TTS_URL": "http://localhost:8750",
+  "ONLINE_TTS_BASE_URL": "",
+  "ONLINE_TTS_API_KEY": "",
+  "AUDIO_CACHE_LIMIT_MB": 200
+}

@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  app:
+    image: nginx:alpine
+    container_name: paperread_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ../public:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
+  tts:
+    build:
+      context: .
+    container_name: paperread_tts
+    ports:
+      - "8750:8750"
+    environment:
+      - PORT=8750
+      - MEDIA_DIR=/data/media
+    volumes:
+      - ./media:/data/media
+    restart: unless-stopped

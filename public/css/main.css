@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --reader-font-scale: 1;
+  --reader-line-height: 1.6;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+body {
+  font-family: theme('fontFamily.display');
+  background-color: theme('colors.background-light');
+  color: #333333;
+}
+
+.dark body {
+  background-color: theme('colors.background-dark');
+  color: #e5e5e5;
+}
+
+.drop-cap::first-letter {
+  font-size: calc(4.5rem * var(--reader-font-scale));
+  font-weight: 700;
+  line-height: 0.7;
+  float: left;
+  margin-right: 0.1em;
+  margin-top: 0.05em;
+  color: #333333;
+  font-family: theme('fontFamily.serif');
+}
+
+.reader-column::-webkit-scrollbar {
+  width: 8px;
+}
+
+.reader-column::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 9999px;
+}
+
+.reader-column {
+  font-size: calc(1rem * var(--reader-font-scale));
+  line-height: var(--reader-line-height);
+}
+
+.single-column .reader-columns {
+  display: block;
+}
+
+.single-column #column-b {
+  display: none;
+}
+
+.column-toggle[aria-pressed="true"] {
+  background-color: rgba(250, 204, 21, 0.35);
+  color: #333333;
+  font-weight: 600;
+}
+
+.dark .column-toggle[aria-pressed="true"] {
+  background-color: rgba(251, 191, 36, 0.25);
+  color: #f5f5f4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

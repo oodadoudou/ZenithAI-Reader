@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# OS files
+.DS_Store
+
+# Logs
+npm-debug.log*
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Reference materials
+REQUIREMENTS.md
+stitch_e_book_reader_import_page/
+
+# Documents
+*.doc
+*.docx
+
+# Backend runtime
+backend/media/

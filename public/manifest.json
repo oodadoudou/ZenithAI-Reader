@@ -1,0 +1,9 @@
+{
+  "name": "PaperRead",
+  "short_name": "PaperRead",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#fdfaf6",
+  "theme_color": "#fdfaf6",
+  "icons": []
+}

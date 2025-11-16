@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PaperRead — Library</title>
+    <meta name="description" content="ZenithAI-Reader offline library" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/favicon.ico" />
+  </head>
+  <body class="min-h-screen bg-background-light text-[#333333] transition-colors dark:bg-background-dark dark:text-gray-100">
+    <div id="app" class="relative flex min-h-screen w-full flex-col items-center justify-center px-4 py-10 font-display">
+      <div class="flex w-full max-w-5xl flex-col items-center gap-10">
+        <header class="flex w-full flex-col items-center gap-2 text-center">
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-primary">ZenithAI</p>
+          <h1 class="text-4xl font-black tracking-tight text-[#333333] dark:text-gray-100">PaperRead Library</h1>
+          <p class="text-base text-[#333333]/70 dark:text-gray-400">Import .epub or .txt titles and continue exactly where you left off—fully offline.</p>
+        </header>
+        <section class="w-full rounded-2xl border-2 border-dashed border-[#d1d1d1] bg-white/70 p-10 text-center shadow-sm transition dark:border-gray-700 dark:bg-zinc-900/60" aria-label="Upload books">
+          <div class="flex flex-col items-center gap-6">
+            <span class="material-symbols-outlined text-5xl text-[#d1d1d1] dark:text-gray-600" aria-hidden="true">upload_file</span>
+            <div class="flex flex-col items-center gap-1">
+              <p class="text-lg font-bold">Drag & drop .epub or .txt</p>
+              <p class="text-sm text-[#333333]/70 dark:text-gray-400">or click to select a file</p>
+            </div>
+            <input id="file-input" type="file" accept=".epub,.txt" class="hidden" aria-label="Select book to import" />
+            <button id="file-trigger" class="rounded-full bg-[#333333] px-6 py-2 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-primary hover:text-[#333333] dark:bg-gray-200 dark:text-[#333333] dark:hover:bg-primary" type="button">Select file</button>
+            <p id="drop-hint" class="text-xs text-[#333333]/60 dark:text-gray-500">Files never leave your device by default. We'll prompt before using the online TTS provider.</p>
+          </div>
+        </section>
+        <section class="w-full" aria-live="polite">
+          <div class="flex w-full flex-wrap items-center justify-between gap-4">
+            <div class="relative flex-1 min-w-[200px]">
+              <label for="library-search" class="sr-only">Search library</label>
+              <input id="library-search" type="search" placeholder="Search by title or author" class="w-full rounded-full border border-gray-200 bg-white/80 px-4 py-2 text-sm text-[#333333] placeholder:text-[#333333]/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary dark:border-zinc-800 dark:bg-zinc-900/70 dark:text-gray-100" />
+              <span class="material-symbols-outlined pointer-events-none absolute right-3 top-2.5 text-gray-400" aria-hidden="true">search</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <label for="sort-select" class="text-sm font-medium text-[#333333]/80 dark:text-gray-300">Sort</label>
+              <select id="sort-select" class="rounded-full border border-gray-200 bg-white/80 px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-900/70">
+                <option value="recent">Recently added</option>
+                <option value="az">Title A→Z</option>
+                <option value="za">Title Z→A</option>
+              </select>
+            </div>
+            <button id="theme-toggle" class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-sm font-semibold text-[#333333] hover:border-primary dark:border-zinc-800 dark:text-gray-100" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+              Theme
+            </button>
+          </div>
+          <div id="library-grid" class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" role="list" aria-label="Library"></div>
+          <p id="library-empty" class="mt-6 text-center text-sm text-[#333333]/70 dark:text-gray-400">No books yet. Import one above.</p>
+        </section>
+        <section id="sync-banner" class="hidden w-full rounded-2xl border border-amber-300 bg-amber-50/80 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/60 dark:bg-amber-900/20 dark:text-amber-100" role="alert">
+          Online sync disabled—using offline storage only.
+        </section>
+      </div>
+    </div>
+    <script type="module" src="/js/library-page.js"></script>
+  </body>
+</html>
