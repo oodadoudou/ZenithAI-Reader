@@ -27,9 +27,13 @@ The backend exposes `/tts` for offline synthesis plus `/tts/generate` as a pass-
 - Offline reader shell, library import, and OPFS/IndexedDB persistence are working.
 - AI voice (online provider) is still in progress; current plan is to add both Chinese and English voice selections once the service contract is finalized.
 
-## Screenshots
+## UI Preview
 
-![Library view showing the dual-language UI](public/static/screens/library.png)
+**Library page** – Import .epub and .txt files with drag & drop, search and sort your collection:
 
-![Reader view with Chinese text](public/static/screens/reader.png)
+![Library page showing book import and collection management](public/static/screens/library.png)
+
+**Reading experience** – Clean, customizable layout with adjustable fonts, themes, and TTS playback:
+
+![Reader displaying Chinese text with customization controls](public/static/screens/reader.png)
 
