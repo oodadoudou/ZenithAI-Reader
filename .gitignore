@@ -54,3 +54,8 @@ public/static/screens/regressions/
 
 # Backend runtime
 backend/media/
+# CI workflows (ignore local)
+.github/
+.github/
+docs/
+scripts/a11y/

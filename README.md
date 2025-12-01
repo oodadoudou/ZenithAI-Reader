@@ -61,15 +61,6 @@ docker compose down
 
 The backend exposes `/tts` for offline synthesis, `/tts/generate` as a pass-through when `ONLINE_TTS_BASE_URL` is configured, `/voices` + `/voices/download` for managing Piper models, and `/status` for disk/cache telemetry.
 
-## Current status & roadmap
-- Reader UI refactor: transparent/neutral canvas, removed paper simulation, chapter-based prev/next.
-- Immersion reading: near‑real‑time word highlight (timestamp alignment when provided), sleep timer, Media Session position state.
-- Voice gallery: offline/online providers with language filter; offline downloads via FastAPI `/voices/download`.
-- Performance & privacy: load/page‑turn/search/audio‑queue metrics with diagnostics budget overlay.
-- EPUB cover preview: auto‑extracts cover for cards/list if missing.
-- TXT parsing: preserves single newlines within paragraphs; blank lines split paragraphs.
-- Accessibility: keyboard parity, visible focus, ARIA states; pa11y/axe reports integrated.
-
 ## UI Preview
 
 **Library page** – Search/sort, tags, metadata editing; EPUB covers auto‑extracted:
