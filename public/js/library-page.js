@@ -532,7 +532,7 @@ function formatMediaType(mediaType) {
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch((err) => console.warn('sw failed', err));
+    navigator.serviceWorker.register('sw.js').catch((err) => console.warn('sw failed', err));
   }
 }
 

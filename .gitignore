@@ -43,6 +43,7 @@ AGENTS.md
 ARCHITECTURE.md
 PLAN.md
 REQUIREMENTS.md
+cypress.config.js
 
 # Documents
 *.doc
