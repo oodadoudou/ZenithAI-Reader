@@ -30,6 +30,8 @@ export async function importBook(file) {
     cover: metadata.cover,
     storage,
     lastReadLocation: LAST_READ_DEFAULT,
+    annotations: [],
+    bookmarks: [],
   };
   if (supportsOPFS) {
     await storageAdapters.saveMetadataToOPFS(id, record);

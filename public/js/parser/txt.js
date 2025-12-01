@@ -27,9 +27,16 @@ function looksLikeHeading(line) {
 
 export function parseTxt(buffer) {
   const text = UTF8.decode(buffer);
+  // Split by blank lines, preserve single newlines within paragraphs
   const paragraphs = text
-    .split(/\n{2,}/)
-    .map((para) => para.replace(/\s+/g, ' ').trim())
+    .split(/\r?\n\s*\r?\n+/)
+    .map((para) => para.replace(/[\t ]+/g, ' ').trim())
     .filter(Boolean);
-  return paragraphs;
+  const chapters = [];
+  paragraphs.forEach((para, index) => {
+    if (looksLikeHeading(para)) {
+      chapters.push({ title: para.slice(0, 80), index });
+    }
+  });
+  return { paragraphs, chapters };
 }

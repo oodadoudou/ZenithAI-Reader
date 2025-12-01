@@ -70,9 +70,19 @@ def write_stub_wav(target: Path) -> int:
 
 
 def _voice_model_path(settings: Settings, voice_id: str) -> str:
-  voice_path = Path(voice_id)
-  if not voice_path.is_absolute() and settings.voice_dir:
-    voice_path = settings.voice_dir / voice_path
+  alias_target = settings.voice_aliases.get(voice_id, voice_id)
+  voice_path = Path(alias_target)
+  base_dir: Optional[Path] = None
+  if not voice_path.is_absolute():
+    base_dir = settings.voice_dir
+    voice_path = base_dir / voice_path
+  if voice_path.exists():
+    return str(voice_path)
+  if base_dir and not voice_path.suffix:
+    for suffix in (".onnx", ".bin", ".pt"):
+      candidate = voice_path.with_suffix(suffix)
+      if candidate.exists():
+        return str(candidate)
   return str(voice_path)
 
 

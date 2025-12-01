@@ -22,6 +22,8 @@
 - Ready check `/readyz` reports piper presence boolean.
 - Provide a cache eviction endpoint (e.g. `DELETE /tts/cache/{filename}`) so the reader can drop audio files when a book is deleted (per REQUIREMENTS.md).
 - Accept optional `book_id` in `POST /tts` requests and track generated filenames in `media_dir/audio_index.json` so deleting a book can clear related audio automatically.
+- Support Mandarin voices via friendly aliases (`zh_CN_female`, `zh_CN_male`) that map to Piper model filenames through the `VOICE_ALIASES` environment variable so readers do not need to reference raw paths.
+- Ship `/voices` (catalog + installed flag), `/voices/download` (pull Piper models from a manifest or mirror), and `/status` (disk/cache usage) so the frontend can manage packs per REQUIREMENTS.md.
 
 ### M3 — Online TTS proxy (optional)
 - `POST /tts/generate` forwards to `ONLINE_TTS_BASE_URL` with API key if `ENABLE_ONLINE_PROXY=1`.

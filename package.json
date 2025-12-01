@@ -8,16 +8,29 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "coverage:check": "node scripts/coverage/check.js",
+    "a11y:report:index": "pa11y http://127.0.0.1:4173/index.html --reporter json > reports/a11y-index.json",
+    "a11y:report:reading": "pa11y http://127.0.0.1:4173/reading.html --reporter json > reports/a11y-reading.json"
+    ,"a11y:assert": "node scripts/a11y/assert.js",
+    "cy:run": "cypress run --browser chrome --headless",
+    "cy:a11y": "cypress run --browser chrome --headless --spec cypress/e2e/a11y_keyboard.cy.js"
   },
   "dependencies": {
     "fflate": "0.8.1",
-    "idb": "7.1.1"
+    "idb": "7.1.1",
+    "pdfjs-dist": "^4.2.67"
   },
   "devDependencies": {
     "@tailwindcss/forms": "0.5.6",
+    "@vitest/coverage-istanbul": "^1.4.0",
     "autoprefixer": "10.4.17",
     "jsdom": "^27.1.0",
+    "pa11y": "6.2.3",
+    "cypress": "^13.7.3",
+    "cypress-axe": "^1.5.0",
+    "@testing-library/cypress": "^10.0.1",
     "postcss": "8.4.35",
     "tailwindcss": "3.4.1",
     "vite": "5.1.6",

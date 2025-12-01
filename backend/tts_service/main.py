@@ -19,13 +19,16 @@ from fastapi import (
     status,
     Form,
 )
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from .library import LibraryStore
 from .rate_limit import enforce_rate_limit
 from .settings import Settings, get_settings
+from .system import get_system_status
 from .tts import TTSRequest, delete_cache_file, forward_online_tts, synthesize
+from .voices import download_voice_pack, list_voices
 
 class LastReadLocation(BaseModel):
   para: int
@@ -38,6 +41,10 @@ class BookUpdate(BaseModel):
   author: Optional[str] = None
   cover: Optional[str] = None
   last_read_location: Optional[LastReadLocation] = None
+
+
+class VoiceDownloadRequest(BaseModel):
+  voice_id: str = Field(..., min_length=1)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -55,6 +62,15 @@ def get_library_store() -> LibraryStore:
 
 
 app = FastAPI(title="PaperRead TTS Service", version="0.3.0")
+
+# Add CORS middleware to allow frontend access from different origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify exact origins like ["http://localhost:8080"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")
@@ -140,6 +156,18 @@ def create_online_tts(payload: TTSRequest):
   return JSONResponse(normalized)
 
 
+@app.get("/voices", tags=["voices"])
+def get_voices():
+  settings = get_settings()
+  return {"voices": list_voices(settings)}
+
+
+@app.post("/voices/download", tags=["voices"])
+def download_voice(payload: VoiceDownloadRequest):
+  settings = get_settings()
+  return download_voice_pack(settings, payload.voice_id)
+
+
 @app.delete("/tts/cache/{filename}", tags=["tts"])
 def delete_cache(filename: str = Path(..., description="Cached audio filename")):
   settings = get_settings()
@@ -188,3 +216,9 @@ def update_book_entry(payload: BookUpdate, book_id: str = Path(...)):
   store = get_library_store()
   entry = store.update_book(book_id, payload.model_dump(exclude_unset=True))
   return entry
+
+
+@app.get("/status", tags=["system"])
+def status_overview():
+  settings = get_settings()
+  return get_system_status(settings)

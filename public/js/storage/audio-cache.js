@@ -32,3 +32,24 @@ export function consumeAudioUrls(bookId) {
   writeIndex(index);
   return entry;
 }
+
+export function peekAudioCache() {
+  return readIndex();
+}
+
+export function summarizeAudioCache() {
+  const index = readIndex();
+  const bookIds = Object.keys(index);
+  let offline = 0;
+  let online = 0;
+  for (const bookId of bookIds) {
+    const entry = index[bookId];
+    offline += entry?.offline?.length || 0;
+    online += entry?.online?.length || 0;
+  }
+  return {
+    booksWithAudio: bookIds.length,
+    offlineEntries: offline,
+    onlineEntries: online,
+  };
+}

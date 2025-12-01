@@ -45,6 +45,13 @@ docker compose down
 - **Dev server:** `npm run dev` (serves `public/` at http://localhost:5173)
 - **Run tests:** `npm run test`
 - **Production build:** `npm run build`
+- **PDF support:** the PDF parser relies on pdf.js standard fonts. Copy `node_modules/pdfjs-dist/standard_fonts/` into `public/static/pdfjs/` (or adjust `standardFontDataUrl` in `public/js/parser/pdf.js`) before deploying.
+- **Dictionary & translation:** add offline dictionary packs to `public/data/` (update `DICTIONARY_PACK_URL`) and configure `TRANSLATION_PROVIDER`/`TRANSLATION_URL` in `public/config.json`. The reader shows a consent modal before sending lookup text to the remote translator.
+- **Annotation export/import:** follow `docs/export/ANNOTATIONS.md` for the manifest formats and privacy notices (translation consent, share sheets) when working on bundles.
+
+### Accessibility & Screen Reader QA
+- **VoiceOver (macOS):** turn on `Cmd+F5`, then use `Control+Option+Space` to activate toolbar buttons and verify selection toolbar announcements.
+- **NVDA (Windows):** follow `docs/a11y/NVDA.md` for setup plus test flows (bookmark toggle, dialogs, TTS controls). Capture findings in `docs/a11y/READING_AUDIT.md` whenever regressions are filed.
 
 ### Backend (offline TTS helper)
 - **Setup virtualenv:** `python -m venv venv && source venv/bin/activate`
@@ -52,19 +59,23 @@ docker compose down
 - **Start server:** `uvicorn backend.tts_service.main:app --reload --port 8750`
 - **Run tests:** `pytest backend/tests -q`
 
-The backend exposes `/tts` for offline synthesis and `/tts/generate` as a pass-through when `ONLINE_TTS_BASE_URL` is configured.
+The backend exposes `/tts` for offline synthesis, `/tts/generate` as a pass-through when `ONLINE_TTS_BASE_URL` is configured, `/voices` + `/voices/download` for managing Piper models, and `/status` for disk/cache telemetry.
 
 ## Current status & roadmap
-- Offline reader shell, library import, and OPFS/IndexedDB persistence are working.
-- AI voice (online provider) is still in progress; current plan is to add both Chinese and English voice selections once the service contract is finalized.
+- Reader UI refactor: transparent/neutral canvas, removed paper simulation, chapter-based prev/next.
+- Immersion reading: near‑real‑time word highlight (timestamp alignment when provided), sleep timer, Media Session position state.
+- Voice gallery: offline/online providers with language filter; offline downloads via FastAPI `/voices/download`.
+- Performance & privacy: load/page‑turn/search/audio‑queue metrics with diagnostics budget overlay.
+- EPUB cover preview: auto‑extracts cover for cards/list if missing.
+- TXT parsing: preserves single newlines within paragraphs; blank lines split paragraphs.
+- Accessibility: keyboard parity, visible focus, ARIA states; pa11y/axe reports integrated.
 
 ## UI Preview
 
-**Library page** – Import .epub and .txt files with drag & drop, search and sort your collection:
+**Library page** – Search/sort, tags, metadata editing; EPUB covers auto‑extracted:
 
-![Library page showing book import and collection management](public/static/screens/library.jpg)
+![Library page showing collection management](public/static/screens/library.jpg)
 
-**Reading experience** – Clean, customizable layout with adjustable fonts, themes, and TTS playback:
+**Reading experience** – Chapter nav, TTS playback, sleep timer, diagnostics overlay:
 
-![Reader displaying Chinese text with customization controls](public/static/screens/reader.jpg)
-
+![Reader displaying text and controls](public/static/screens/reader.jpg)

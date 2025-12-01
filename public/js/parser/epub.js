@@ -47,34 +47,64 @@ function resolvePath(basePath, relative) {
 }
 
 function extractCover(zip, pkgDoc, rootPath) {
+  // EPUB 2: <meta name="cover" content="id">
   const metaCover = pkgDoc.querySelector('meta[name="cover"]');
-  if (!metaCover) return undefined;
-  const coverId = metaCover.getAttribute('content');
-  if (!coverId) return undefined;
-  const item = pkgDoc.querySelector(`manifest > item[id="${coverId}"]`);
-  if (!item) return undefined;
-  const href = item.getAttribute('href');
-  const mediaType = item.getAttribute('media-type') || 'image/jpeg';
-  const coverPath = resolvePath(rootPath, href);
-  try {
-    const binary = readBinaryEntry(zip, coverPath);
-    const base64 = btoa(String.fromCharCode(...binary));
-    return `data:${mediaType};base64,${base64}`;
-  } catch (err) {
-    console.warn('Failed to extract cover', err);
-    return undefined;
+  if (metaCover) {
+    const coverId = metaCover.getAttribute('content');
+    const item = coverId && pkgDoc.querySelector(`manifest > item[id="${coverId}"]`);
+    if (item) {
+      const href = item.getAttribute('href');
+      const mediaType = item.getAttribute('media-type') || 'image/jpeg';
+      const coverPath = resolvePath(rootPath, href);
+      try {
+        const binary = readBinaryEntry(zip, coverPath);
+        const base64 = btoa(String.fromCharCode(...binary));
+        return `data:${mediaType};base64,${base64}`;
+      } catch {}
+    }
   }
+  // EPUB 3: manifest item with properties ~= "cover-image"
+  const propItem = pkgDoc.querySelector('manifest > item[properties~="cover-image"]');
+  if (propItem) {
+    const href = propItem.getAttribute('href');
+    const mediaType = propItem.getAttribute('media-type') || 'image/jpeg';
+    const coverPath = resolvePath(rootPath, href);
+    try {
+      const binary = readBinaryEntry(zip, coverPath);
+      const base64 = btoa(String.fromCharCode(...binary));
+      return `data:${mediaType};base64,${base64}`;
+    } catch {}
+  }
+  // Guide reference fallback
+  const guideRef = pkgDoc.querySelector('guide > reference[type="cover"], guide > reference[type="cover-image"]');
+  if (guideRef) {
+    const href = guideRef.getAttribute('href');
+    const coverPath = resolvePath(rootPath, href);
+    try {
+      const binary = readBinaryEntry(zip, coverPath);
+      const base64 = btoa(String.fromCharCode(...binary));
+      return `data:image/jpeg;base64,${base64}`;
+    } catch {}
+  }
+  return undefined;
 }
 
-function extractTextFromDoc(doc) {
-  const paragraphs = [];
-  doc.querySelectorAll('p, div, section').forEach((node) => {
+function extractContentFromDoc(doc, sink) {
+  const nodes = doc.body?.querySelectorAll('h1, h2, h3, p, div, section') || [];
+  nodes.forEach((node) => {
     const text = node.textContent?.replace(/\s+/g, ' ').trim();
-    if (text && text.length > 20) {
-      paragraphs.push(text);
+    if (!text) return;
+    const tag = node.tagName.toLowerCase();
+    if (tag === 'h1' || tag === 'h2' || tag === 'h3') {
+      if (text.length >= 3) {
+        sink.chapters.push({ title: text, index: sink.paragraphs.length });
+      }
+      return;
+    }
+    if (text.length > 20) {
+      sink.paragraphs.push(text);
     }
   });
-  return paragraphs;
 }
 
 export function extractEpubMetadata(buffer) {
@@ -101,7 +131,7 @@ export function parseEpub(buffer) {
   packageDoc.querySelectorAll('manifest > item').forEach((item) => {
     manifest.set(item.getAttribute('id'), item.getAttribute('href'));
   });
-  const paragraphs = [];
+  const sink = { paragraphs: [], chapters: [] };
   packageDoc.querySelectorAll('spine > itemref').forEach((itemref) => {
     const idref = itemref.getAttribute('idref');
     const href = manifest.get(idref);
@@ -110,10 +140,10 @@ export function parseEpub(buffer) {
       const fullPath = resolvePath(rootPath, href);
       const xhtml = readEntry(zip, fullPath);
       const doc = XML_PARSER.parseFromString(xhtml, 'application/xhtml+xml');
-      paragraphs.push(...extractTextFromDoc(doc));
+      extractContentFromDoc(doc, sink);
     } catch (err) {
       console.warn('Skip spine item', href, err);
     }
   });
-  return paragraphs;
+  return sink;
 }

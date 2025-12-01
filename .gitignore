@@ -3,6 +3,12 @@ node_modules/
 
 # Build outputs
 dist/
+coverage/
+reports/
+
+# Preview logs
+nohup.out
+*.log
 
 # OS files
 .DS_Store
@@ -32,9 +38,19 @@ ENV/
 REQUIREMENTS.md
 stitch_e_book_reader_import_page/
 
+# Project docs (ignore local edits)
+AGENTS.md
+ARCHITECTURE.md
+PLAN.md
+REQUIREMENTS.md
+
 # Documents
 *.doc
 *.docx
+
+# Tooling docs & screenshots
+.trae/documents/
+public/static/screens/regressions/
 
 # Backend runtime
 backend/media/

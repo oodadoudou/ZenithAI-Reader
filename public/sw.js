@@ -17,7 +17,7 @@ let audioCacheLimitBytes = 200 * 1024 * 1024;
 let runtimeConfig = { OFFLINE_TTS_URL: '', ONLINE_TTS_BASE_URL: '' };
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(Promise.all([primeConfig(), cacheShell()]).then(() => self.skipWaiting()));
+  event.waitUntil(primeConfig().then(() => cacheShell()).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
@@ -57,6 +57,13 @@ self.addEventListener('message', (event) => {
 async function cacheShell() {
   const cache = await caches.open(CACHE_NAME);
   await cache.addAll(SHELL_ASSETS);
+  try {
+    const pack = runtimeConfig?.DICTIONARY_PACK_URL;
+    if (pack && typeof pack === 'string' && pack.length) {
+      await cache.add(pack);
+    }
+  } catch (err) {
+  }
 }
 
 async function primeConfig() {

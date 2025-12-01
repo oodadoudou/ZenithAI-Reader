@@ -12,20 +12,43 @@
   </head>
   <body class="bg-background-light text-[#333333] dark:bg-background-dark dark:text-gray-100">
     <div class="relative flex min-h-screen w-full flex-col gap-4 px-4 pb-28 pt-8 font-display">
-      <header class="flex items-center justify-between gap-4">
-        <button id="back-button" class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-[#333333] hover:border-primary dark:border-zinc-800 dark:text-gray-100" type="button">
+      <header class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <button id="back-button" class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-[#333333] hover:border-primary dark:border-zinc-800 dark:text-gray-100" type="button">
           <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
           Library
         </button>
-        <div class="flex items-center gap-2">
-          <label for="provider-select" class="text-xs uppercase tracking-wider text-[#333333]/60 dark:text-gray-400">Provider</label>
-          <select id="provider-select" class="rounded-full border border-gray-200 bg-white/80 px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-900/70">
-            <option value="offline">Offline (default)</option>
-            <option value="online">Online</option>
-          </select>
-          <button id="reader-theme-toggle" class="rounded-full border border-gray-200 p-2 text-[#333333] hover:border-primary dark:border-zinc-800 dark:text-gray-100" type="button" aria-label="Toggle theme">
-            <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
-          </button>
+          <p id="reader-progress-label" class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">0% read</p>
+        </div>
+        <div class="flex flex-1 items-center justify-end gap-3">
+          <div class="hidden items-center gap-2 md:flex">
+            <label for="provider-select" class="text-xs uppercase tracking-wider text-[#333333]/60 dark:text-gray-400">Provider</label>
+            <select id="provider-select" class="rounded-full border border-gray-200 bg-white/80 px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-900/70">
+              <option value="offline">Offline (default)</option>
+              <option value="online">Online</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="reader-nav-button" class="rounded-full border border-gray-200 p-2 text-[#333333] hover:border-primary focus-visible:ring-2 focus-visible:ring-primary/60 dark:border-zinc-800 dark:text-gray-100" type="button" aria-label="Open chapters">
+              <span class="material-symbols-outlined" aria-hidden="true">toc</span>
+            </button>
+            <button id="reader-bookmark-toggle" class="rounded-full border border-gray-200 p-2 text-[#333333] hover:border-primary focus-visible:ring-2 focus-visible:ring-primary/60 dark:border-zinc-800 dark:text-gray-100" type="button" aria-label="Save bookmark" aria-pressed="false">
+              <span class="material-symbols-outlined" aria-hidden="true">bookmark_add</span>
+            </button>
+            <button id="reader-search-button" class="rounded-full border border-gray-200 p-2 text-[#333333] hover:border-primary focus-visible:ring-2 focus-visible:ring-primary/60 dark:border-zinc-800 dark:text-gray-100" type="button" aria-label="Search this book">
+              <span class="material-symbols-outlined" aria-hidden="true">search</span>
+            </button>
+            <button id="reader-annotations-button" class="rounded-full border border-gray-200 p-2 text-[#333333] hover:border-primary focus-visible:ring-2 focus-visible:ring-primary/60 dark:border-zinc-800 dark:text-gray-100" type="button" aria-label="Open annotations">
+              <span class="material-symbols-outlined" aria-hidden="true">stylus_note</span>
+            </button>
+
+            <button id="reader-theme-toggle" class="rounded-full border border-gray-200 p-2 text-[#333333] hover:border-primary focus-visible:ring-2 focus-visible:ring-primary/60 dark:border-zinc-800 dark:text-gray-100" type="button" aria-label="Toggle theme">
+              <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+            </button>
+            <button id="reader-quick-settings" class="rounded-full border border-gray-200 p-2 text-[#333333] hover:border-primary focus-visible:ring-2 focus-visible:ring-primary/60 dark:border-zinc-800 dark:text-gray-100" type="button" aria-label="Quick settings">
+              <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+            </button>
+          </div>
         </div>
       </header>
       <section class="flex flex-wrap items-center gap-4 rounded-2xl border border-gray-100 bg-white/60 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-[#555555]/80 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-gray-300">
@@ -37,13 +60,7 @@
             <button id="font-size-up" class="px-2 text-sm" type="button" aria-label="Increase font size">A+</button>
           </div>
         </div>
-        <div class="flex items-center gap-2 text-[11px] normal-case">
-          <span>Columns</span>
-          <div class="inline-flex rounded-full border border-gray-200 text-[#333333] dark:border-zinc-700 dark:text-gray-100">
-            <button type="button" data-column-mode="one" class="column-toggle px-3 py-1 text-xs" aria-pressed="false">Single</button>
-            <button type="button" data-column-mode="two" class="column-toggle px-3 py-1 text-xs" aria-pressed="true">Dual</button>
-          </div>
-        </div>
+        
         <div class="flex items-center gap-2 text-[11px] normal-case">
           <label for="line-height-range">Line</label>
           <input id="line-height-range" type="range" min="1.2" max="2" step="0.1" value="1.6" class="h-1 w-24 rounded-full bg-gray-200 accent-primary dark:bg-zinc-700" />
@@ -51,17 +68,37 @@
         </div>
         <div class="flex items-center gap-2 text-[11px] normal-case">
           <label for="voice-select">Voice</label>
-          <select id="voice-select" class="rounded-full border border-gray-200 bg-white/80 px-3 py-1 text-xs text-[#333333] dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-gray-100">
-            <option value="en_US">English (US)</option>
-            <option value="en_GB">English (UK)</option>
-            <option value="es_ES">Spanish</option>
-          </select>
+          <div class="flex flex-col gap-1">
+            <select id="voice-language-filter" class="rounded-full border border-gray-200 bg-white/80 px-3 py-1 text-xs text-[#333333] dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-gray-100">
+              <option value="all">All languages</option>
+            </select>
+            <select id="voice-select" class="rounded-full border border-gray-200 bg-white/80 px-3 py-1 text-xs text-[#333333] dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-gray-100">
+              <option value="en_US">English (US)</option>
+              <option value="en_GB">English (UK)</option>
+              <option value="es_ES">Spanish</option>
+              <option value="zh_CN_female">中文（女声）· Mandarin</option>
+              <option value="zh_CN_male">中文（男声）· Mandarin</option>
+            </select>
+            <button id="voice-download" class="hidden w-full rounded-full border border-primary/60 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-yellow-100 dark:border-amber-400 dark:text-amber-200" type="button">
+              Download voice
+            </button>
+            <p id="voice-status" class="text-[11px] text-[#333333]/60 dark:text-gray-400" aria-live="polite"></p>
+          </div>
         </div>
       </section>
-      <main id="reader" class="relative flex flex-1 flex-col rounded-3xl bg-white/90 px-6 py-12 shadow-2xl backdrop-blur dark:bg-zinc-900/80" aria-live="polite">
-        <div class="reader-columns flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-10">
-          <article class="reader-column space-y-6 text-lg leading-relaxed text-[#333333] dark:text-gray-200" id="column-a"></article>
-          <article class="reader-column space-y-6 text-lg leading-relaxed text-[#333333] dark:text-gray-200" id="column-b"></article>
+      <main id="reader" class="relative flex flex-1 flex-col bg-transparent px-6 py-12 dark:bg-transparent reader-shell" aria-live="polite">
+        <div class="book-stage" data-book-stage>
+          <div class="book-surface book-surface-left" aria-hidden="true"></div>
+          <div class="book-surface book-surface-right" aria-hidden="true"></div>
+          <div class="book-content">
+            <div class="reader-columns flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-10">
+              <article class="reader-column space-y-6 text-lg leading-relaxed text-[#333333] dark:text-gray-200" id="column-a"></article>
+              <article class="reader-column space-y-6 text-lg leading-relaxed text-[#333333] dark:text-gray-200" id="column-b"></article>
+            </div>
+          </div>
+          <div class="page-turn" aria-hidden="true" data-page-turn>
+            <div class="page-turn-highlight" aria-hidden="true"></div>
+          </div>
         </div>
         <div id="loading-state" class="flex flex-col items-center gap-2 py-20 text-center text-sm text-[#333333]/70 dark:text-gray-400">
           <span class="material-symbols-outlined animate-spin text-3xl text-primary" aria-hidden="true">progress_activity</span>
@@ -79,20 +116,249 @@
             <button id="tts-toggle" class="rounded-full bg-primary p-4 text-[#333333] shadow-lg transition hover:bg-yellow-300 dark:text-[#23210f]" type="button" aria-pressed="false" aria-label="Toggle speech playback">
               <span id="tts-icon" class="material-symbols-outlined text-4xl" aria-hidden="true">play_arrow</span>
             </button>
-            <div class="flex items-center gap-2 text-xs text-[#555555] dark:text-gray-400">
-              <label for="speed-range" class="uppercase tracking-wider">Speed</label>
-              <input id="speed-range" type="range" min="0.8" max="2" step="0.1" value="1" class="h-1.5 w-48 rounded-full bg-gray-200 accent-primary dark:bg-zinc-700" />
-              <span id="speed-value" aria-live="polite">1.0x</span>
-            </div>
+          <div class="flex items-center gap-2 text-xs text-[#555555] dark:text-gray-400">
+            <label for="speed-range" class="uppercase tracking-wider">Speed</label>
+            <input id="speed-range" type="range" min="0.8" max="2" step="0.1" value="1" class="h-1.5 w-48 rounded-full bg-gray-200 accent-accent-blue dark:bg-zinc-700" />
+            <span id="speed-value" aria-live="polite">1.0x</span>
+          </div>
+          <div class="mt-2 flex items-center gap-2">
+            <button id="listen-add" class="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold dark:border-zinc-800" type="button">Add to queue</button>
+            <button id="listen-play" class="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold dark:border-zinc-800" type="button">Play queue</button>
+          </div>
           </div>
           <button id="next-paragraph" class="flex w-24 flex-col items-center text-xs font-medium text-[#555555] hover:text-black dark:text-gray-400 dark:hover:text-white" type="button">
             <span class="material-symbols-outlined text-2xl" aria-hidden="true">arrow_forward</span>
             Next
           </button>
         </div>
-        <p id="privacy-banner" class="mt-2 hidden text-center text-xs text-amber-700 dark:text-amber-200">Online TTS sends selected text to the configured provider.</p>
+        <p id="privacy-banner" class="mt-2 hidden text-center text-xs text-[#555555] dark:text-gray-300">Online TTS sends selected text to the configured provider.</p>
       </section>
     </div>
+
+    <div id="selection-toolbar" class="selection-toolbar" aria-hidden="true">
+      <div class="selection-toolbar__inner">
+        <div class="flex items-center gap-2" role="group" aria-label="Highlight colors">
+          <button class="swatch" data-color="sun" type="button" aria-label="Highlight yellow"></button>
+          <button class="swatch swatch--peach" data-color="peach" type="button" aria-label="Highlight peach"></button>
+          <button class="swatch swatch--mint" data-color="mint" type="button" aria-label="Highlight mint"></button>
+          <button class="swatch swatch--lavender" data-color="lavender" type="button" aria-label="Highlight lavender"></button>
+        </div>
+        <div class="flex items-center gap-2 text-xs" role="group" aria-label="Selection actions">
+          <button id="selection-note" type="button">Note</button>
+          <button id="selection-define" type="button">Define</button>
+          <button id="selection-quote" type="button">Quote</button>
+          <button id="selection-share" type="button">Share</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="nav-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <aside id="nav-drawer" class="sheet-panel" aria-hidden="true" aria-label="Chapter navigation">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Navigate</h2>
+        <button id="nav-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close navigation">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div class="mt-4 flex flex-col gap-2">
+        <label for="progress-scrubber" class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">Go to location</label>
+        <input id="progress-scrubber" type="range" min="0" max="0" value="0" class="h-1 w-full rounded-full bg-gray-200 accent-primary dark:bg-zinc-700" />
+        <p id="progress-scrubber-label" class="text-xs text-[#666666] dark:text-gray-400">0%</p>
+      </div>
+      <div class="chapter-list" id="chapter-list"></div>
+      <div class="mt-8">
+        <p class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">Bookmarks</p>
+        <div class="mt-2 flex flex-wrap items-center gap-3">
+          <label for="bookmark-search" class="sr-only">Search bookmarks</label>
+          <input id="bookmark-search" type="search" placeholder="Search bookmarks" class="flex-1 rounded-2xl border border-gray-200 bg-white/70 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900/60" />
+          <label for="bookmark-sort" class="sr-only">Sort bookmarks</label>
+          <select id="bookmark-sort" class="rounded-2xl border border-gray-200 bg-white/70 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900/60">
+            <option value="recent">Recently added</option>
+            <option value="paraAsc">Paragraph ↑</option>
+            <option value="paraDesc">Paragraph ↓</option>
+          </select>
+        </div>
+        <p id="bookmark-empty" class="mt-2 text-sm text-[#666666] dark:text-gray-400">No bookmarks yet. Tap the ribbon icon to save your spot.</p>
+        <div id="bookmark-list" class="mt-3 space-y-3"></div>
+      </div>
+    </aside>
+
+    <div id="quick-settings-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <section id="quick-settings-panel" class="floating-panel" aria-hidden="true" role="dialog" aria-label="Quick settings">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Quick settings</h2>
+        <button id="quick-settings-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close quick settings">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div class="quick-settings-grid">
+        <div>
+          <label for="brightness-control" class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">Brightness</label>
+          <input id="brightness-control" type="range" min="0.5" max="1.2" step="0.05" value="1" class="mt-2 h-1 w-full rounded-full bg-gray-200 accent-primary dark:bg-zinc-700" />
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">Auto night</p>
+          <button id="auto-night-toggle" class="toggle-pill mt-2" type="button" data-active="false">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">bedtime</span>
+            <span>Off</span>
+          </button>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">Orientation lock</p>
+          <button id="orientation-lock-toggle" class="toggle-pill mt-2" type="button" data-active="false">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">screen_lock_rotation</span>
+            <span>Allow rotate</span>
+          </button>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">Daily goal</p>
+          <p id="goal-progress-label" class="mt-1 text-sm font-medium text-[#333333] dark:text-gray-100">0 / 20 min</p>
+          <div class="progress-track mt-2" aria-hidden="true">
+            <div id="goal-progress-bar" class="progress-fill" style="width:0%"></div>
+          </div>
+          <label for="goal-target-input" class="mt-3 block text-xs text-[#666666] dark:text-gray-400">Target minutes
+            <input id="goal-target-input" type="number" min="5" max="180" step="5" class="mt-1 w-full rounded-full border border-gray-200 px-3 py-1 text-sm dark:border-zinc-700" value="20" />
+          </label>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">Sleep timer</p>
+          <div class="mt-2 flex items-center gap-2">
+            <label for="sleep-timer-input" class="sr-only">Sleep minutes</label>
+            <input id="sleep-timer-input" type="number" min="5" max="120" step="5" class="w-24 rounded-full border border-gray-200 px-3 py-1 text-sm dark:border-zinc-700" value="15" />
+            <button id="sleep-timer-start" class="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold dark:border-zinc-700" type="button">Start</button>
+            <button id="sleep-timer-cancel" class="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold dark:border-zinc-700" type="button">Cancel</button>
+          </div>
+          <p id="sleep-timer-status" class="mt-1 text-xs text-[#666666] dark:text-gray-400" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-[#666666] dark:text-gray-400">Sketch</p>
+          <button id="sketch-toggle" class="toggle-pill mt-2" type="button" data-active="false">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">draw</span>
+            <span>Off</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div id="search-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <section id="search-panel" class="floating-panel" aria-hidden="true" role="dialog" aria-label="Search within book">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Search</h2>
+        <button id="search-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close search">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div class="mt-3">
+        <label for="reader-search-input" class="sr-only">Search query</label>
+        <input id="reader-search-input" type="search" placeholder="Search text" class="w-full rounded-2xl border border-gray-200 bg-white/70 px-4 py-2 text-sm text-[#333333] placeholder:text-[#333333]/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-gray-100" />
+      </div>
+      <div id="search-empty" class="mt-4 text-sm text-[#666666] dark:text-gray-400">Type to search the current book.</div>
+      <div id="search-results" class="mt-4 search-results"></div>
+    </section>
+
+    <div id="annotations-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <section id="annotations-panel" class="floating-panel" aria-hidden="true" role="dialog" aria-label="Annotations">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Annotations</h2>
+        <button id="annotations-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close annotations">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div class="mt-3">
+        <label for="annotations-search" class="sr-only">Search annotations</label>
+        <input id="annotations-search" type="search" placeholder="Search annotations" class="w-full rounded-2xl border border-gray-200 bg-white/70 px-4 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900/60" />
+      </div>
+      <div id="annotations-empty" class="mt-4 text-sm text-[#666666] dark:text-gray-400">No highlights yet. Select text to create one.</div>
+      <div id="annotations-list" class="mt-4 space-y-3 overflow-y-auto" style="max-height:320px"></div>
+    </section>
+
+    <div id="note-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <section id="note-panel" class="floating-panel" aria-hidden="true" role="dialog" aria-label="Add note">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Add note</h2>
+        <button id="note-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close note editor">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <textarea id="note-input" rows="4" class="mt-3 w-full rounded-2xl border border-gray-200 bg-white/80 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900/60" placeholder="Write a note..."></textarea>
+      <div class="mt-4 flex items-center justify-end gap-2">
+        <button id="note-save" class="rounded-full bg-[#333333] px-4 py-2 text-sm font-semibold text-white dark:bg-gray-200 dark:text-[#23210f]" type="button">Save note</button>
+      </div>
+    </section>
+
+    <div id="dictionary-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <section id="dictionary-panel" class="floating-panel" aria-hidden="true" role="dialog" aria-label="Dictionary">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Dictionary</h2>
+        <button id="dictionary-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close dictionary">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div class="mt-2 text-sm text-[#666666] dark:text-gray-300" id="dictionary-word"></div>
+      <p id="dictionary-definition" class="mt-3 text-base text-[#333333] dark:text-gray-100"></p>
+      <p id="dictionary-translation" class="mt-3 text-sm text-[#666666] dark:text-gray-300"></p>
+      <div class="mt-4 flex items-center gap-2">
+        <button id="dictionary-add-vocab" class="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold dark:border-zinc-700" type="button">Add to vocab</button>
+        <button id="dictionary-translate" class="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold dark:border-zinc-700" type="button">Translate</button>
+        <button id="dictionary-open-vocab" class="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold dark:border-zinc-700" type="button">Vocabulary</button>
+      </div>
+    </section>
+
+    <div id="quote-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <section id="quote-panel" class="floating-panel" aria-hidden="true" role="dialog" aria-label="Share quote">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Share quote</h2>
+        <button id="quote-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close share panel">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div id="quote-card" class="mt-3 rounded-3xl bg-white/90 p-5 text-base text-[#333333] shadow-ios-lg dark:bg-zinc-900/80 dark:text-gray-100">
+        <p id="quote-card-text" class="italic"></p>
+        <p id="quote-card-meta" class="mt-3 text-sm text-[#666666] dark:text-gray-400"></p>
+      </div>
+      <div class="mt-4 flex items-center gap-2">
+        <button id="quote-copy" class="rounded-full bg-[#333333] px-4 py-2 text-sm font-semibold text-white dark:bg-gray-200 dark:text-[#23210f]" type="button">Copy text</button>
+        <button id="quote-share" class="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold dark:border-zinc-700" type="button">Share…</button>
+      </div>
+    </section>
+
+    <div id="vocab-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <section id="vocab-panel" class="floating-panel" aria-hidden="true" role="dialog" aria-label="Vocabulary">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Vocabulary builder</h2>
+        <button id="vocab-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close vocabulary">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div class="mt-3 flex flex-wrap gap-3">
+        <label for="vocab-search" class="sr-only">Search vocabulary</label>
+        <input id="vocab-search" type="search" placeholder="Search words" class="flex-1 rounded-2xl border border-gray-200 bg-white/70 px-4 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900/60" />
+        <select id="vocab-filter" class="rounded-2xl border border-gray-200 bg-white/70 px-4 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900/60">
+          <option value="all">All statuses</option>
+          <option value="new">New</option>
+          <option value="learning">Learning</option>
+          <option value="mastered">Mastered</option>
+        </select>
+      </div>
+      <div id="vocab-empty" class="mt-4 text-sm text-[#666666] dark:text-gray-400">No vocabulary cards yet. Add one from the dictionary.</div>
+      <div id="vocab-list" class="mt-4 space-y-3 overflow-y-auto" style="max-height:320px"></div>
+    </section>
+
+    <div id="translation-consent-backdrop" class="panel-backdrop" aria-hidden="true"></div>
+    <section id="translation-consent-panel" class="floating-panel" aria-hidden="true" role="dialog" aria-label="Translation privacy">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#333333] dark:text-gray-100">Send selection to translator?</h2>
+        <button id="translation-consent-close" class="rounded-full border border-gray-200 p-2 dark:border-zinc-800" type="button" aria-label="Close translation consent">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <p class="mt-3 text-sm text-[#555555] dark:text-gray-300">The selected word will be sent to the configured translation service. PaperRead never stores the remote result.</p>
+      <p class="mt-2 text-sm text-[#555555] dark:text-gray-300">You can revoke this consent anytime from Settings.</p>
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <button id="translation-consent-accept" class="rounded-full bg-[#333333] px-4 py-2 text-sm font-semibold text-white dark:bg-gray-200 dark:text-[#23210f]" type="button">Allow translation</button>
+        <button id="translation-consent-decline" class="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-[#333333] dark:border-zinc-700 dark:text-gray-100" type="button">Not now</button>
+      </div>
+    </section>
     <script type="module" src="/js/reader-page.js"></script>
   </body>
 </html>

@@ -1,0 +1,44 @@
+{
+  "voices": [
+    {
+      "id": "ai_celeste_en",
+      "name": "Celeste",
+      "language": "en-US",
+      "style": "storyteller",
+      "gender": "female",
+      "sample_url": "/static/samples/celeste.mp3",
+      "latency_ms": 350,
+      "quality": "studio"
+    },
+    {
+      "id": "ai_orion_en",
+      "name": "Orion",
+      "language": "en-GB",
+      "style": "narrator",
+      "gender": "male",
+      "sample_url": "/static/samples/orion.mp3",
+      "latency_ms": 410,
+      "quality": "studio"
+    },
+    {
+      "id": "ai_luna_es",
+      "name": "Luna",
+      "language": "es-ES",
+      "style": "dialogue",
+      "gender": "female",
+      "sample_url": "/static/samples/luna.mp3",
+      "latency_ms": 380,
+      "quality": "studio"
+    },
+    {
+      "id": "ai_mori_jp",
+      "name": "Mori",
+      "language": "ja-JP",
+      "style": "news",
+      "gender": "male",
+      "sample_url": "/static/samples/mori.mp3",
+      "latency_ms": 420,
+      "quality": "broadcast"
+    }
+  ]
+}

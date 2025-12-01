@@ -2,6 +2,8 @@ import json
 
 import httpx
 
+from tts_service.tts import _voice_model_path
+
 
 def test_healthz_returns_ok(client_builder):
   client, _, _, _ = client_builder()
@@ -89,3 +91,15 @@ def test_online_tts_forwarding_success(client_builder, monkeypatch):
   assert response.json()["audio_url"].startswith("https://cdn")
   assert dummy.called
   assert dummy.url == "https://api.example.com/tts/generate"
+
+
+def test_voice_alias_maps_to_model_path(client_builder, tmp_path):
+  voices_dir = tmp_path / "voices"
+  voices_dir.mkdir()
+  aliases = json.dumps({"zh_CN_female": "zh-cn-huayan.onnx"})
+  _, _, _, main = client_builder(VOICE_DIR=str(voices_dir), VOICE_ALIASES=aliases)
+
+  settings = main.get_settings()
+  resolved = _voice_model_path(settings, "zh_CN_female")
+  assert str(voices_dir) in resolved
+  assert resolved.endswith("zh-cn-huayan.onnx")

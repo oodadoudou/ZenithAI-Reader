@@ -1,15 +1,24 @@
 const THEME_KEY = 'paperread-theme';
 
+function applyTheme(mode) {
+  document.documentElement.classList.toggle('dark', mode === 'dark');
+  document.documentElement.classList.toggle('light', mode !== 'dark');
+}
+
 export function applySavedTheme() {
   const saved = localStorage.getItem(THEME_KEY) || 'light';
-  document.documentElement.classList.toggle('dark', saved === 'dark');
-  document.documentElement.classList.toggle('light', saved !== 'dark');
+  applyTheme(saved);
+}
+
+export function setTheme(mode) {
+  const normalized = mode === 'dark' ? 'dark' : 'light';
+  localStorage.setItem(THEME_KEY, normalized);
+  applyTheme(normalized);
+  return normalized;
 }
 
 export function toggleTheme() {
   const isDark = document.documentElement.classList.contains('dark');
   const next = isDark ? 'light' : 'dark';
-  localStorage.setItem(THEME_KEY, next);
-  applySavedTheme();
-  return next;
+  return setTheme(next);
 }

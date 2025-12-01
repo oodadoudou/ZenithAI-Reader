@@ -11,8 +11,14 @@ describe('TXT parser', () => {
 
   it('splits paragraphs on blank lines', () => {
     const buffer = new TextEncoder().encode('Para one\n\nPara two');
-    const paragraphs = parseTxt(buffer);
+    const { paragraphs } = parseTxt(buffer);
     expect(paragraphs).toEqual(['Para one', 'Para two']);
+  });
+
+  it('records headings as chapters', () => {
+    const buffer = new TextEncoder().encode('Chapter 1\n\nContent paragraph');
+    const { chapters } = parseTxt(buffer);
+    expect(chapters[0].title).toMatch(/Chapter 1/);
   });
 });
 
