@@ -67,7 +67,7 @@ export class OfflineVoiceProvider extends VoiceProvider {
     if (!base) return DEFAULT_VOICES;
     try {
       const response = await fetch(`${base}/voices`);
-      if (!response.ok) throw new Error(`offline voices failed with ${response.status}`);
+      if (!response.ok) throw new Error(`offline voices failed with ${response.status} ${response.statusText}`);
       const payload = await response.json();
       if (Array.isArray(payload?.voices)) {
         return payload.voices;

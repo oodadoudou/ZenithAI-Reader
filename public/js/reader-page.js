@@ -542,7 +542,7 @@ async function playFrom(index) {
         if (!playing) return;
         recordAudioUrl(bookId, providerPreference, payload.audioUrl);
         if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
-        const alignment = Array.isArray(payload.words) ? payload.words.map((w) => ({ start: Number(w.start_ms)||0, end: Number(w.end_ms)||0 })) : null;
+        const alignment = Array.isArray(payload.words) ? payload.words.map((w) => ({ start: Number(w.start_ms) || 0, end: Number(w.end_ms) || 0 })) : null;
         const node = document.querySelector(`[data-paragraph-index="${currentIndex}"]`);
         if (node) node.__wordAlignment = alignment;
         await playAudio(payload.audioUrl, Number(payload.duration_ms) || 0, totalDurationMs);
@@ -692,7 +692,7 @@ function renderParagraphs(parsed, book) {
       const p = document.createElement('p');
       p.innerHTML = renderParagraphContent(text, index);
       p.dataset.paragraphIndex = index;
-      p.className = `font-serif text-lg leading-relaxed text-[#333333] dark:text-gray-200 ${index === 0 ? 'drop-cap' : ''}`;
+      p.className = `font-serif text-lg leading-relaxed text-[#333333] dark:text-gray-200`;
       target?.appendChild(p);
     });
   });
@@ -749,7 +749,7 @@ function showError(message) {
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js').catch(() => { });
   }
 }
 
@@ -1265,7 +1265,7 @@ function updatePositionState(durationMs, positionMs) {
       duration: Math.max(0, Number(durationMs) || 0) / 1000,
       position: Math.max(0, Number(positionMs) || 0) / 1000,
     });
-  } catch {}
+  } catch { }
 }
 
 function renderChapterList() {
@@ -1436,7 +1436,7 @@ function readListenQueue() {
 }
 
 function writeListenQueue(list) {
-  try { localStorage.setItem(LISTEN_QUEUE_KEY, JSON.stringify(list)) } catch {}
+  try { localStorage.setItem(LISTEN_QUEUE_KEY, JSON.stringify(list)) } catch { }
 }
 
 function addToListenQueue(index) {
@@ -1446,7 +1446,7 @@ function addToListenQueue(index) {
 }
 
 async function playListenQueue() {
-  const list = readListenQueue().filter((i) => Number.isFinite(i)).sort((a,b) => a-b);
+  const list = readListenQueue().filter((i) => Number.isFinite(i)).sort((a, b) => a - b);
   if (!list.length) return;
   playing = true;
   ttsToggle?.setAttribute('aria-pressed', 'true');
@@ -2094,12 +2094,12 @@ function closeQuotePanel() {
 
 function copyQuoteText() {
   const text = `${quoteCardText?.textContent || ''}\n${quoteCardMeta?.textContent || ''}`.trim();
-  navigator.clipboard?.writeText(text).catch(() => {});
+  navigator.clipboard?.writeText(text).catch(() => { });
 }
 
 function systemShareQuote() {
   if (navigator.share) {
-    navigator.share({ text: `${quoteCardText?.textContent || ''}\n${quoteCardMeta?.textContent || ''}`.trim() }).catch(() => {});
+    navigator.share({ text: `${quoteCardText?.textContent || ''}\n${quoteCardMeta?.textContent || ''}`.trim() }).catch(() => { });
   } else {
     copyQuoteText();
   }
@@ -2109,9 +2109,9 @@ function shareSelectionText() {
   if (!selectionState) return;
   const payload = selectionState.text;
   if (navigator.share) {
-    navigator.share({ text: payload }).catch(() => {});
+    navigator.share({ text: payload }).catch(() => { });
   } else {
-    navigator.clipboard?.writeText(payload).catch(() => {});
+    navigator.clipboard?.writeText(payload).catch(() => { });
   }
   hideSelectionToolbar();
 }

@@ -8,7 +8,7 @@ import { DiagnosticsPanel } from './ui/diagnostics-panel.js';
 import { measureMetric } from './utils/telemetry.js';
 import { exportSelected } from './export/backup.js';
 import { setFeatureFlag } from './utils/feature-flags.js';
- 
+
 import { loadTags, saveTags, listBooksByTag, getTagsForBook, setTagsForBook, addTag, removeTag, getTagIndex, saveTagIndex } from './storage/tags.js';
 
 applySavedTheme();
@@ -114,7 +114,7 @@ function init() {
     renderLibrary();
   });
   tagManageBtn?.addEventListener('click', () => openTagManager());
-  tagAdd?.addEventListener('click', () => { const name = tagInput.value.trim(); if (name) { addTag(name); tagInput.value=''; populateTagFilter(); renderTagLists(); } });
+  tagAdd?.addEventListener('click', () => { const name = tagInput.value.trim(); if (name) { addTag(name); tagInput.value = ''; populateTagFilter(); renderTagLists(); } });
   tagClose?.addEventListener?.('click', () => closeTagManager());
   batchBtn?.addEventListener('click', () => openBatchActions());
   selectNoneBtn?.addEventListener('click', () => { selectedIds.clear(); updateSelectedCount(); renderLibrary(); });
@@ -135,7 +135,7 @@ function init() {
     if (icon) icon.textContent = pressed ? 'view_list' : 'view_module';
     applyViewClass();
     renderLibrary();
-    try { localStorage.setItem('paperread-library-view', viewMode); } catch {}
+    try { localStorage.setItem('paperread-library-view', viewMode); } catch { }
   });
   void setupSyncBanner();
   loadBooks();
@@ -168,7 +168,7 @@ async function loadBooks() {
   renderContinueReading();
   renderTimeline();
   renderAnalyticsCards();
-  void backfillMissingCovers();
+  void backfillMissingOrInvalidCovers();
 }
 
 function renderLibrary() {
@@ -221,12 +221,12 @@ function renderTimeline() {
   for (const b of books) {
     const ts = (b.stats && b.stats.last_session_at) || b.addedAt || Date.now();
     const d = new Date(ts);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(b);
   }
-  const html = Array.from(groups.entries()).sort(([a],[b]) => b.localeCompare(a)).map(([day, items]) => {
-    const rows = items.map((b) => `<li class="flex items-center justify-between"><span class="text-xs">${b.title}</span><span class="text-[10px] text-[#333333]/60 dark:text-gray-400">${(b.author||'')}</span></li>`).join('');
+  const html = Array.from(groups.entries()).sort(([a], [b]) => b.localeCompare(a)).map(([day, items]) => {
+    const rows = items.map((b) => `<li class="flex items-center justify-between"><span class="text-xs">${b.title}</span><span class="text-[10px] text-[#333333]/60 dark:text-gray-400">${(b.author || '')}</span></li>`).join('');
     return `<li class="rounded-2xl border border-gray-200 bg-white/80 p-3 text-xs shadow-sm dark:border-zinc-800 dark:bg-zinc-900/70"><div class="mb-2 font-semibold">${day}</div><ul class="space-y-1">${rows}</ul></li>`;
   }).join('');
   list.innerHTML = html;
@@ -327,7 +327,7 @@ function renderBookListItem(book) {
   item.innerHTML = `
     <div class="flex items-center gap-3">
       <input type="checkbox" class="h-4 w-4 rounded border-gray-300" data-select="${book.id}" ${selectedIds.has(book.id) ? 'checked' : ''} aria-label="Select" />
-      <div class="h-10 w-10 rounded-lg bg-gray-200 text-base font-black text-[#333333] flex items-center justify-center uppercase" style="${book.cover ? `background-image:url(${book.cover}); background-size:cover; background-position:center;` : ''}">${book.cover ? '' : (book.title || '').slice(0,2)}</div>
+      <div class="h-10 w-10 rounded-lg bg-gray-200 text-base font-black text-[#333333] flex items-center justify-center uppercase" style="${book.cover ? `background-image:url(${book.cover}); background-size:cover; background-position:center;` : ''}">${book.cover ? '' : (book.title || '').slice(0, 2)}</div>
       <div class="flex flex-col">
         <span class="text-sm font-bold text-[#333333] dark:text-gray-100">${book.title}</span>
         <span class="text-xs text-[#333333]/60 dark:text-gray-400">${book.author || 'Unknown author'}</span>
@@ -415,7 +415,7 @@ function purgeCachedAudio(bookId) {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready
       .then((registration) => registration.active?.postMessage({ type: 'DELETE_AUDIO', payload }))
-      .catch(() => {});
+      .catch(() => { });
   }
 }
 
@@ -614,10 +614,25 @@ async function openImportConflictModal(file) {
 if (typeof window !== 'undefined') {
   window.__openImportConflictModal = openImportConflictModal;
 }
-async function backfillMissingCovers() {
-  const missing = books.filter((b) => !b.cover && (b.mediaType || '').toLowerCase().includes('epub'));
-  if (!missing.length) return;
-  for (const book of missing) {
+function isCoverDataUrlInvalid(cover) {
+  if (!cover || typeof cover !== 'string') return true;
+  // quick heuristic: base64 decodes to XHTML/SVG instead of image bytes
+  const m = cover.match(/base64,([A-Za-z0-9+/=]+)/);
+  if (!m) return false;
+  try {
+    const sample = atob(m[1].slice(0, 200));
+    const head = sample.slice(0, 40).toLowerCase();
+    if (head.includes('<html') || head.includes('<svg')) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+async function backfillMissingOrInvalidCovers() {
+  const targets = books.filter((b) => (b.mediaType || '').toLowerCase().includes('epub') && (!b.cover || isCoverDataUrlInvalid(b.cover)));
+  if (!targets.length) return;
+  for (const book of targets) {
     try {
       const blob = await readBookBlob(book);
       const buffer = await blob.arrayBuffer();
@@ -625,7 +640,7 @@ async function backfillMissingCovers() {
       if (meta?.cover) {
         await updateBook(book.id, { cover: meta.cover });
       }
-    } catch {}
+    } catch { }
   }
   books = await listBooks();
   renderLibrary();

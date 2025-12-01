@@ -68,9 +68,11 @@ function extractImageFromXhtml(zip, xhtmlPath) {
   try {
     const xhtml = readEntry(zip, xhtmlPath);
     const doc = XML_PARSER.parseFromString(xhtml, 'application/xhtml+xml');
-    let src = doc.querySelector('img')?.getAttribute('src')
-      || doc.querySelector('svg image')?.getAttribute('xlink:href')
-      || doc.querySelector('svg image')?.getAttribute('href');
+    const imgEl = doc.querySelector('img');
+    const svgImg = doc.querySelector('svg image');
+    const XLINK_NS = 'http://www.w3.org/1999/xlink';
+    let src = imgEl?.getAttribute('src')
+      || (svgImg ? (svgImg.getAttributeNS ? (svgImg.getAttributeNS(XLINK_NS, 'href') || svgImg.getAttribute('href')) : (svgImg.getAttribute('xlink:href') || svgImg.getAttribute('href'))) : null);
     if (!src) return undefined;
     const resolved = resolvePath(xhtmlPath, src);
     const bin = readBinaryEntry(zip, resolved);
@@ -89,7 +91,7 @@ function extractCover(zip, pkgDoc, rootPath) {
     const item = coverId && pkgDoc.querySelector(`manifest > item[id="${coverId}"]`);
     if (item) {
       const href = item.getAttribute('href');
-      const coverPath = resolvePath(rootPath, href);
+      const coverPath = resolvePath(rootPath, decodeURIComponent(href));
       const mediaType = item.getAttribute('media-type') || guessMediaTypeFromPath(coverPath);
       try {
         if (/xhtml|html/i.test(mediaType)) {
@@ -99,7 +101,7 @@ function extractCover(zip, pkgDoc, rootPath) {
         const binary = readBinaryEntry(zip, coverPath);
         const base64 = toBase64(binary);
         return `data:${mediaType};base64,${base64}`;
-      } catch {}
+      } catch { }
     }
   }
   // EPUB 3: manifest item with properties ~= "cover-image"
@@ -116,7 +118,7 @@ function extractCover(zip, pkgDoc, rootPath) {
       const binary = readBinaryEntry(zip, coverPath);
       const base64 = toBase64(binary);
       return `data:${mediaType};base64,${base64}`;
-    } catch {}
+    } catch { }
   }
   // Guide reference fallback
   const guideRef = pkgDoc.querySelector('guide > reference[type="cover"], guide > reference[type="cover-image"]');
@@ -132,7 +134,7 @@ function extractCover(zip, pkgDoc, rootPath) {
       const binary = readBinaryEntry(zip, coverPath);
       const base64 = toBase64(binary);
       return `data:${mt};base64,${base64}`;
-    } catch {}
+    } catch { }
   }
   return undefined;
 }

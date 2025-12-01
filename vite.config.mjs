@@ -1,6 +1,10 @@
 import { defineConfig } from 'vite';
 import { copyFileSync, mkdirSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
   root: 'public',
@@ -8,14 +12,19 @@ export default defineConfig({
   server: {
     port: 4173,
     strictPort: true,
-    fs: {
-      strict: false,
+  },
+  css: {
+    postcss: resolve(__dirname, 'postcss.config.cjs'),
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
     },
   },
   build: {
     outDir: '../dist',
     emptyOutDir: true,
-    target: 'es2022',
+    target: 'esnext',
     rollupOptions: {
       input: {
         index: 'public/index.html',
