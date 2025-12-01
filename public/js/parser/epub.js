@@ -56,6 +56,31 @@ function toBase64(u8) {
   return btoa(binary);
 }
 
+function guessMediaTypeFromPath(path) {
+  const p = (path || '').toLowerCase();
+  if (p.endsWith('.png')) return 'image/png';
+  if (p.endsWith('.webp')) return 'image/webp';
+  if (p.endsWith('.gif')) return 'image/gif';
+  return 'image/jpeg';
+}
+
+function extractImageFromXhtml(zip, xhtmlPath) {
+  try {
+    const xhtml = readEntry(zip, xhtmlPath);
+    const doc = XML_PARSER.parseFromString(xhtml, 'application/xhtml+xml');
+    let src = doc.querySelector('img')?.getAttribute('src')
+      || doc.querySelector('svg image')?.getAttribute('xlink:href')
+      || doc.querySelector('svg image')?.getAttribute('href');
+    if (!src) return undefined;
+    const resolved = resolvePath(xhtmlPath, src);
+    const bin = readBinaryEntry(zip, resolved);
+    const mt = guessMediaTypeFromPath(resolved);
+    return `data:${mt};base64,${toBase64(bin)}`;
+  } catch {
+    return undefined;
+  }
+}
+
 function extractCover(zip, pkgDoc, rootPath) {
   // EPUB 2: <meta name="cover" content="id">
   const metaCover = pkgDoc.querySelector('meta[name="cover"]');
@@ -64,9 +89,13 @@ function extractCover(zip, pkgDoc, rootPath) {
     const item = coverId && pkgDoc.querySelector(`manifest > item[id="${coverId}"]`);
     if (item) {
       const href = item.getAttribute('href');
-      const mediaType = item.getAttribute('media-type') || 'image/jpeg';
       const coverPath = resolvePath(rootPath, href);
+      const mediaType = item.getAttribute('media-type') || guessMediaTypeFromPath(coverPath);
       try {
+        if (/xhtml|html/i.test(mediaType)) {
+          const fromPage = extractImageFromXhtml(zip, coverPath);
+          if (fromPage) return fromPage;
+        }
         const binary = readBinaryEntry(zip, coverPath);
         const base64 = toBase64(binary);
         return `data:${mediaType};base64,${base64}`;
@@ -77,9 +106,13 @@ function extractCover(zip, pkgDoc, rootPath) {
   const propItem = pkgDoc.querySelector('manifest > item[properties~="cover-image"]');
   if (propItem) {
     const href = propItem.getAttribute('href');
-    const mediaType = propItem.getAttribute('media-type') || 'image/jpeg';
     const coverPath = resolvePath(rootPath, href);
     try {
+      const mediaType = propItem.getAttribute('media-type') || guessMediaTypeFromPath(coverPath);
+      if (/xhtml|html/i.test(mediaType)) {
+        const fromPage = extractImageFromXhtml(zip, coverPath);
+        if (fromPage) return fromPage;
+      }
       const binary = readBinaryEntry(zip, coverPath);
       const base64 = toBase64(binary);
       return `data:${mediaType};base64,${base64}`;
@@ -91,9 +124,14 @@ function extractCover(zip, pkgDoc, rootPath) {
     const href = guideRef.getAttribute('href');
     const coverPath = resolvePath(rootPath, href);
     try {
+      const mt = guessMediaTypeFromPath(coverPath);
+      if (/xhtml|html/i.test(mt)) {
+        const fromPage = extractImageFromXhtml(zip, coverPath);
+        if (fromPage) return fromPage;
+      }
       const binary = readBinaryEntry(zip, coverPath);
       const base64 = toBase64(binary);
-      return `data:image/jpeg;base64,${base64}`;
+      return `data:${mt};base64,${base64}`;
     } catch {}
   }
   return undefined;
