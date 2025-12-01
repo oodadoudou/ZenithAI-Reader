@@ -55,7 +55,10 @@ public/static/screens/regressions/
 # Backend runtime
 backend/media/
 # CI workflows (ignore local)
-.github/
+.github/*
+!.github/workflows/
+!.github/workflows/ci.yml
 .github/
 docs/
 scripts/a11y/
+cypress/
