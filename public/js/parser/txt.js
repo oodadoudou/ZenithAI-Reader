@@ -30,7 +30,7 @@ export function parseTxt(buffer) {
   // Split by blank lines, preserve single newlines within paragraphs
   const paragraphs = text
     .split(/\r?\n\s*\r?\n+/)
-    .map((para) => para.replace(/[\t ]+/g, ' ').trim())
+    .map((para) => para.trim())
     .filter(Boolean);
   const chapters = [];
   paragraphs.forEach((para, index) => {

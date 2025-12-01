@@ -46,6 +46,16 @@ function resolvePath(basePath, relative) {
   return baseParts.join('/');
 }
 
+function toBase64(u8) {
+  let binary = '';
+  const step = 0x8000;
+  for (let i = 0; i < u8.length; i += step) {
+    const chunk = u8.subarray(i, i + step);
+    binary += String.fromCharCode.apply(null, chunk);
+  }
+  return btoa(binary);
+}
+
 function extractCover(zip, pkgDoc, rootPath) {
   // EPUB 2: <meta name="cover" content="id">
   const metaCover = pkgDoc.querySelector('meta[name="cover"]');
@@ -58,7 +68,7 @@ function extractCover(zip, pkgDoc, rootPath) {
       const coverPath = resolvePath(rootPath, href);
       try {
         const binary = readBinaryEntry(zip, coverPath);
-        const base64 = btoa(String.fromCharCode(...binary));
+        const base64 = toBase64(binary);
         return `data:${mediaType};base64,${base64}`;
       } catch {}
     }
@@ -71,7 +81,7 @@ function extractCover(zip, pkgDoc, rootPath) {
     const coverPath = resolvePath(rootPath, href);
     try {
       const binary = readBinaryEntry(zip, coverPath);
-      const base64 = btoa(String.fromCharCode(...binary));
+      const base64 = toBase64(binary);
       return `data:${mediaType};base64,${base64}`;
     } catch {}
   }
@@ -82,7 +92,7 @@ function extractCover(zip, pkgDoc, rootPath) {
     const coverPath = resolvePath(rootPath, href);
     try {
       const binary = readBinaryEntry(zip, coverPath);
-      const base64 = btoa(String.fromCharCode(...binary));
+      const base64 = toBase64(binary);
       return `data:image/jpeg;base64,${base64}`;
     } catch {}
   }
